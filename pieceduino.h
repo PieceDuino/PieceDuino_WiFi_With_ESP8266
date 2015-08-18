@@ -55,7 +55,7 @@ public:
     byte StringLength(char *str);
     int FindEspRecv(char *str);
     int FindEspRecv(char *str,String &recv);
-    
+    bool StringFilter(String begin, String end, String &data);
     
     void ProcessMessage(char *str, byte len);
     void parseWebsocket(String frame);
