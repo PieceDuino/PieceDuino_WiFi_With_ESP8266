@@ -1,4 +1,4 @@
-#include "esp8266.h"
+#include "pieceduino.h"
 #define SSID        "Your SSID"
 #define PASSWORD    "Your Password"
 esp8266 wifi(Serial1);
