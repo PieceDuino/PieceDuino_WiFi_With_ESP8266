@@ -11,11 +11,11 @@ void setup(){
   Serial.begin(9600);
   Serial1.begin(115200);
 
-  /*
+  
   while (!Serial) {
     ; // wait for serial port to connect. Needed for Leonardo only
   }
-  */
+  
   
   wifi.begin();//初始化
   wifi.reset();//重啟WiFi
