@@ -49,6 +49,7 @@ public:
     uint8_t client_id;
     
     void setCallback(void (*WebSocketInCallback)(char key, float value));
+    void SaveDataToCloud(String key, String data);
     
   private:
     

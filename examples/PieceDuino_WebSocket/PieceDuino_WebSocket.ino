@@ -1,7 +1,7 @@
 #include "pieceduino.h"
-#define SSID        "Your SSID"
-#define PASSWORD    "Your Password"
-#define pieceduino_cloud_token    "Your Token" //To www.pieceduino.com pieceCloud get your own token
+#define SSID        "Roolen-3F"
+#define PASSWORD    "54048754"
+#define pieceduino_cloud_token    "8182ac29caef82ab881d235ec5f610cf" //To www.pieceduino.com pieceCloud get your own token
 pieceduino wifi(Serial1);
 uint32_t len;
 unsigned long timer;
@@ -37,9 +37,10 @@ void loop(){
   wifi.recv();
 
   if (millis() - timer > 3000){
-      wifi.Throw('B',millis()/1000.0);
+      //wifi.Throw('B',millis()/1000.0);
+      //wifi.SaveDataToCloud("C","20.3");
       timer = millis();
-    }
+  }
 }
 
 void Catch(char key, float value) {

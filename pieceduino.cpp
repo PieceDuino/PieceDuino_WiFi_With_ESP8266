@@ -2,7 +2,7 @@
 #include "pieceduino.h"
 
 #define DEBUG_MODE 1
-#define WEBSOCKET_SERVER         "io.pieceduino.com"
+#define WEBSOCKET_SERVER         "www.pieceduino.com"
 #define WEBSOCKET_PORT           "8001"
 #define WEBSOCKET_PATH           "/socket.io/?transport=websocket"
 #define SOCKETIO_HEARTBEAT     55000
@@ -52,6 +52,24 @@ uint32_t pieceduino::recv(){
         }
     }
     return 0;
+}
+
+//
+void pieceduino::SaveDataToCloud(String key, String data){
+    String frame;
+    
+    
+    frame ="42[\"s_Data\",\"";
+    frame +="{\\\"from\\\":\\\"Pieceduino\\\",\\\"";
+    frame +=key;
+    frame +="\\\":\\\"";
+    frame +=data;
+    frame +="\\\"}";
+    frame +="\"]";
+    
+    Serial.println(frame);
+    
+    WebSocketSendText(frame);
 }
 
 //

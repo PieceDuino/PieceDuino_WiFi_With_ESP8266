@@ -1,7 +1,7 @@
 #include "pieceduino.h"
 #define SSID        "Your SSID"
 #define PASSWORD    "Your Password"
-esp8266 wifi(Serial1);
+pieceduino wifi(Serial1);
 uint32_t len;
 
 void setup(){
