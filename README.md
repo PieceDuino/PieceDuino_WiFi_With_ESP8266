@@ -1,2 +1,3 @@
 # PieceDuino_WiFi_With_ESP8266
-This a PieceDuino for Arduino Libraries
+這一個專為PieceDuino所寫的ESP8266的Library
+但也相容於所有透過Arduino的ESP8266模組
