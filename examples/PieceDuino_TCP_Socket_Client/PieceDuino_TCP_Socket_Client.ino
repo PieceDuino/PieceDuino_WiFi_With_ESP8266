@@ -1,11 +1,11 @@
 #include "pieceduino.h"
-
 #define SSID        ""
 #define PASSWORD    ""
 pieceduino wifi(Serial1);
 uint32_t len;
 
 void setup(){
+
   Serial.begin(9600);
   Serial1.begin(115200);
   while (!Serial) {
@@ -16,8 +16,13 @@ void setup(){
   wifi.setWifiMode(1);//將WiFi模組設定為Station模式
   wifi.connToWifi(SSID,PASSWORD);//連接網路
   Serial.print(wifi.getIP());//取得IP
-  wifi.enableMUX();//開啟多人連線模式
-  wifi.createTCPServer(8090);//開啟TCP Server
+  wifi.disableMUX();//開啟多人連線模式
+
+  pinMode(13, OUTPUT);
+
+  wifi.createTCP("192.168.4.1",8090);//開啟TCP Server
+  
+  wifi.Send("Hello This Client" , 17);
 }
 
 void loop(){
@@ -37,7 +42,7 @@ void loop(){
       recvData[i] = wifi.MessageBuffer[i];
     }
     delay(1000);
-    wifi.Send(wifi.client_id , "Hello This is Server" , 20);
+    wifi.Send("Hello This Client" , 17);
   }
   //------------------------------------------
 

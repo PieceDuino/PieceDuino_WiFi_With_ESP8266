@@ -1,7 +1,7 @@
 #include "pieceduino.h"
-#define SSID        "Roolen-3F"
-#define PASSWORD    "54048754"
-#define pieceduino_cloud_token    "8182ac29caef82ab881d235ec5f610cf" //To www.pieceduino.com pieceCloud get your own token
+#define SSID        ""
+#define PASSWORD    ""
+#define pieceduino_cloud_token    "" //To www.pieceduino.com pieceCloud get your own token
 pieceduino wifi(Serial1);
 uint32_t len;
 unsigned long timer;
@@ -12,9 +12,9 @@ void setup(){
   Serial1.begin(115200);
 
   
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for Leonardo only
-  }
+  //while (!Serial) {
+    //; // wait for serial port to connect. Needed for Leonardo only
+  //}
   
   
   wifi.begin();//初始化
