@@ -334,12 +334,13 @@ bool pieceduino::enableMUX(){
 }
 
 //
-bool pieceduino::setCIPMode(){
-     m_puart->println("AT+CIPMODE=1");
+bool pieceduino::setSleep(uint8_t mode){
+     m_puart->print("AT+SLEEP=");
+     m_puart->println(mode);
     
     if(FindEspRecv("OK")){
 #if DEBUG_MODE
-        Serial.print("[ok: CIPMPDE]");
+        Serial.print("[ok: Sleep Setting]");
 #endif
         return true;
     }else{
