@@ -29,14 +29,17 @@ public:
     bool reset();
     bool setWifiMode(int pattern);
     bool setAP(String ssid, String pwd , uint8_t channel, uint8_t ecn);
-    bool setCIPMode();
+    bool setSleep(uint8_t mode);
+    bool setDeepSleep(uint8_t time);
     bool connToWifi(String ssid, String pwd);
     String getVersion();
     String getIP();
+    String sensingAP(String ssid);
     bool ProcessReceivedCharacter();
     bool Throw(char key, float value);
     
     bool createTCPServer(uint32_t port = 3333);
+    bool createTCP(String addr, uint32_t port);
     bool enableMUX();
     bool disableMUX();
     bool smartLink();

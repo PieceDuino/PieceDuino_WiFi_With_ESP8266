@@ -116,6 +116,22 @@ String pieceduino::getIP(){
 }
 
 //
+String pieceduino::sensingAP(String ssid){
+    String detail;
+    m_puart->print(F("AT+CWLAP=\""));
+    m_puart->print(ssid);
+    m_puart->println(F("\""));
+    if(FindEspRecv("OK",detail)){
+        StringFilter("(", ")", detail);
+        return detail;
+    }else{
+        return "error";
+    }
+    //
+
+}
+
+//
 bool pieceduino::begin(){
     String Version;
     #if DEBUG_MODE
@@ -258,6 +274,33 @@ bool pieceduino::createTCPServer(uint32_t port){
 
 }
 
+bool pieceduino::createTCP(String addr, uint32_t port)
+{
+    String data;
+ 
+    m_puart->print("AT+CIPSTART=\"TCP");
+    m_puart->print("\",\"");
+    m_puart->print(addr);
+    m_puart->print("\",");
+    m_puart->println(port);
+    
+    if(FindEspRecv("OK\r\n")){
+        
+    #if DEBUG_MODE
+        Serial.println("[ok: TCP created]");
+    #endif
+        
+        return true;
+    }else{
+        
+    #if DEBUG_MODE
+        Serial.println("[error: can't create TCP]");
+    #endif
+        
+        return false;
+    }
+}
+
 //
 bool pieceduino::smartLink(){
     m_puart->print("AT+CWSTARTSMART=0");
@@ -334,13 +377,49 @@ bool pieceduino::enableMUX(){
 }
 
 //
+/*
+ 參數說明
+ <sleep mode>
+ 0 關閉休眠模式
+ 1 light-sleep 模式
+ 2 modem-sleep 模式
+ */
+/*
+1： Modem-Sleep 用于需要 CPU 一直 处于工作状态 如 PWM 或 I2S 应用等。在保持 WiFi 连接时，如果没有数据传输，可根据 802.11 标准（如 U-APSD），关闭 WiFi Modem 电路来省电。例如，在 DTIM3时，每 sleep 300mS，醒来 3mS 接收 AP 的 Beacon 包等，则整体平均电流约 15mA。
+
+2： Light-Sleep 用于 CPU 可暂停的应用，如 WiFi 开关。在保持 WiFi 连接时，如果没有数据传输，可根据 802.11 标准（如 U-APSD），关闭 WiFi Modem 电路并 暂停 CPU 来省电。例如，在 DTIM3 时，每 sleep 300mS，醒来 3mS 接收 AP 的 Beacon 包等，则整体平均电流约 0.9mA。
+
+3： Deep-Sleep 不需一直保持 WiFi 连接，很长时间才发送一次 数据包的 应用，如每 100 秒测量一次温度的传感器。例如，每 300S 醒来后需 0.3~1s 连上 AP 发送数据,则整体平均电流可远小于 1mA。
+ */
 bool pieceduino::setSleep(uint8_t mode){
-     m_puart->print("AT+SLEEP=");
-     m_puart->println(mode);
+    m_puart->print("AT+SLEEP=");
+    m_puart->println(mode);
     
     if(FindEspRecv("OK")){
 #if DEBUG_MODE
         Serial.print("[ok: Sleep Setting]");
+#endif
+        return true;
+    }else{
+        return false;
+    }
+    return false;
+}
+
+//深度睡眠
+/*
+ 參數說明
+ <sleep time>
+ 單位:豪妙
+ ESP8266會在設定時間後自動喚醒
+ */
+bool pieceduino::setDeepSleep(uint8_t time){
+    m_puart->print("AT+GSLP=");
+    m_puart->println(time);
+    
+    if(FindEspRecv("OK")){
+#if DEBUG_MODE
+        Serial.print("[ok: DeepSleep Setting]");
 #endif
         return true;
     }else{
