@@ -1,6 +1,6 @@
 #include "pieceduino.h"
-#define SSID        ""
-#define PASSWORD    ""
+#define SSID        "Your AP SSID"
+#define PASSWORD    "Your AP Password"
 pieceduino wifi(Serial1);
 uint32_t len;
 
@@ -17,17 +17,12 @@ void setup(){
   wifi.connToWifi(SSID,PASSWORD);//連接網路
   Serial.print(wifi.getIP());//取得IP
   wifi.disableMUX();//開啟多人連線模式
-
-  pinMode(13, OUTPUT);
-
   wifi.createTCP("192.168.4.1",8090);//開啟TCP Server
-  
-  wifi.Send("Hello This Client" , 17);
+  wifi.Send("Hello This Client" , 17);//送出訊息到Server端
 }
 
 void loop(){
-
-  //取得socket client訊息並回傳
+  //取得socket server訊息並回傳
   //------------------------------------------
   len = wifi.recv();
   if(len){
@@ -42,7 +37,7 @@ void loop(){
       recvData[i] = wifi.MessageBuffer[i];
     }
     delay(1000);
-    wifi.Send("Hello This Client" , 17);
+    wifi.Send("Hello This Client" , 17);//送出訊息到Server端
   }
   //------------------------------------------
 

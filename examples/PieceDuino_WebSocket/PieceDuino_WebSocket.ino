@@ -1,25 +1,21 @@
 #include "pieceduino.h"
-#define SSID        ""
-#define PASSWORD    ""
-#define pieceduino_cloud_token    "" //To www.pieceduino.com pieceCloud get your own token
+#define SSID        "Your AP SSID"
+#define PASSWORD    "Your AP Password"
+#define pieceduino_cloud_token    "Your Token" //To www.pieceduino.com pieceCloud get your own token
 pieceduino wifi(Serial1);
 uint32_t len;
 unsigned long timer;
 
 void setup(){
-  
   Serial.begin(9600);
   Serial1.begin(115200);
-
   
-  //while (!Serial) {
-    //; // wait for serial port to connect. Needed for Leonardo only
-  //}
-  
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
   
   wifi.begin();//初始化
   wifi.reset();//重啟WiFi
-  Serial.println(wifi.getVersion());//取得WiFi韌體版本
   wifi.setWifiMode(1);//將WiFi模組設定為Station模式
   while(!wifi.connToWifi(SSID,PASSWORD)){//連接網路
     Serial.println("try to reconnect");
@@ -37,7 +33,7 @@ void loop(){
   wifi.recv();
 
   if (millis() - timer > 3000){
-      //wifi.Throw('B',millis()/1000.0);
+      wifi.Throw('Humidity',millis()/1000.0);
       //wifi.SaveDataToCloud("C","20.3");
       timer = millis();
   }
@@ -50,11 +46,9 @@ void Catch(char key, float value) {
   if (key == 'A') {
     if (value == 0) {
       digitalWrite(13, LOW);
-      delay(15);
     }
     else if (value == 1) {
       digitalWrite(13, HIGH);
-      delay(15);
     }
   }
 }

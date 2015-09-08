@@ -1,7 +1,6 @@
 #include "pieceduino.h"
-
-#define SSID        ""
-#define PASSWORD    ""
+#define SSID        "Your AP SSID"
+#define PASSWORD    "Your AP Password"
 pieceduino wifi(Serial1);
 uint32_t len;
 
@@ -37,7 +36,7 @@ void loop(){
       recvData[i] = wifi.MessageBuffer[i];
     }
     delay(1000);
-    wifi.Send(wifi.client_id , "Hello This is Server" , 20);
+    wifi.Send(wifi.client_id , "Hello This is Server" , 20);//送出訊息到Client端
   }
   //------------------------------------------
 

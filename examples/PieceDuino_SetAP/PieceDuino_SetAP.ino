@@ -1,6 +1,4 @@
 #include "pieceduino.h"
-#define SSID        "Your SSID"
-#define PASSWORD    "Your Password"
 pieceduino wifi(Serial1);
 
 void setup() {
@@ -23,9 +21,27 @@ void setup() {
   }
 
   wifi.enableMUX();//開啟多人連線模式
+  wifi.createTCPServer(8090);//開啟TCP Server
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+   //取得socket client訊息並回傳
+  //------------------------------------------
+  len = wifi.recv();
+  if(len){
+    char recvData[len-1];
+    for (uint32_t i = 0; i < len; i++) {
+      Serial.print("Recive ");
+      Serial.print(i);
+      Serial.print(" Byte: ");
+      Serial.print(wifi.MessageBuffer[i]); 
+      Serial.print("  From: ");
+      Serial.println(wifi.client_id);
+      recvData[i] = wifi.MessageBuffer[i];
+    }
+    delay(1000);
+    wifi.Send(wifi.client_id , "Hello This is Server" , 20);
+  }
+  //------------------------------------------
 
 }
