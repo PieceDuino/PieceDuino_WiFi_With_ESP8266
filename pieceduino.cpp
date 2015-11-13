@@ -14,7 +14,7 @@ pieceduino::pieceduino(HardwareSerial &uart, uint32_t baud): m_puart(&uart)
     m_puart->begin(baud);
     rx_empty();
     
-    errorCheck             = 0; //錯誤旗標
+    errorCheck             = 0; //錯誤旗標.
     pingtimer            = 0; //heartbeat時間
     MessageReceivingMode = 0; //模式設定
     MessageSize          = 0; //ESP8266傳來的訊息大小

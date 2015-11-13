@@ -8,7 +8,7 @@
 
 
 // WebSocket protocol constants
-// First byte
+// First byte.
 #define WS_FIN            0x80
 #define WS_OPCODE_TEXT    0x01
 #define WS_OPCODE_BINARY  0x02
