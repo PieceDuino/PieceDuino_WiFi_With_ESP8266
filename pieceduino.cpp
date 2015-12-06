@@ -6,6 +6,7 @@
 #define WEBSOCKET_PORT           "8001"
 #define WEBSOCKET_PATH           "/socket.io/?transport=websocket"
 #define SOCKETIO_HEARTBEAT     55000
+#define CONNECTED_TIMER     10000
 #define ESP8266_TIMEOUT   10000
 
 //
@@ -20,7 +21,7 @@ pieceduino::pieceduino(HardwareSerial &uart, uint32_t baud): m_puart(&uart)
     MessageSize          = 0; //ESP8266傳來的訊息大小
     MessageCursor        = 0;  //
     bWebSocketConnect    = false; //檢測是否現在為使用websocket
-    
+    bConnected = false;
 }
 
 //
@@ -248,6 +249,15 @@ bool pieceduino::connToWifi(String ssid, String pwd){
 }
 
 //
+bool pieceduino::connected(){
+    if (millis() > connectedtimer + CONNECTED_TIMER) {
+        m_puart->println("AT+CIPSTATUS");
+        connectedtimer = millis();
+    }
+    return bConnected;
+}
+
+//
 bool pieceduino::createTCPServer(uint32_t port){
     #if DEBUG_MODE
     Serial.print("create TCP Server...");
@@ -289,7 +299,7 @@ bool pieceduino::createTCP(String addr, uint32_t port)
     #if DEBUG_MODE
         Serial.println("[ok: TCP created]");
     #endif
-        
+        bConnected = true;
         return true;
     }else{
         
@@ -557,6 +567,7 @@ int pieceduino::FindEspRecv(char *str) {
     while (1) {
         if (Serial1.available()) {
             char a = Serial1.read();
+            //Serial.print(a);
             byte i;
             for (i = 0; i < len; i++) {
                 buf[i] = buf[i + 1];
@@ -638,12 +649,14 @@ byte pieceduino::StringLength(char *str) {
 // Receive messeage
 bool pieceduino::ProcessReceivedCharacter() {
     char a = m_puart->read();
+    //Serial.print(a);
 
     MessageCheckBuf[0] = MessageCheckBuf[1];
     MessageCheckBuf[1] = MessageCheckBuf[2];
     MessageCheckBuf[2] = MessageCheckBuf[3];
     MessageCheckBuf[3] = MessageCheckBuf[4];
     MessageCheckBuf[4] = a;
+    
     
     if ((MessageReceivingMode == 0)
         && (MessageCheckBuf[0] == '+')
@@ -656,6 +669,36 @@ bool pieceduino::ProcessReceivedCharacter() {
         }else if(cipmux == 0){
             MessageReceivingMode = 2;
         }
+        return false;
+    }else if ((MessageReceivingMode == 0)//檢測連線狀態
+              && (MessageCheckBuf[0] == 'A')
+              && (MessageCheckBuf[1] == 'T')
+              && (MessageCheckBuf[2] == 'U')
+              && (MessageCheckBuf[3] == 'S')
+              && (MessageCheckBuf[4] == ':')) {
+        //Serial.print("(");
+        delay(1);
+        char b = m_puart->read();
+        if(b != '3'){
+            bConnected = 0;
+            Serial.println(bConnected);
+        }else{
+            bConnected = 1;
+             Serial.println(bConnected);
+        }
+        while (1) {
+            char b = m_puart->read();
+            //Serial.print(b);
+            if(b == ','){
+                //Serial.print(")");
+                return false;
+            }
+            if(bConnected == 0){
+                return false;
+            }
+            delay(1);
+        }
+        
         return false;
     }
     

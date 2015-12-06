@@ -43,6 +43,7 @@ public:
     bool enableMUX();
     bool disableMUX();
     bool smartLink();
+    bool connected();
     uint32_t recv();
     void Send(uint8_t mux_id,char *str, byte len) ;
     void Send(char *str, byte len);
@@ -71,11 +72,14 @@ public:
     byte          errorCheck;
     String pieceduino_cloud_token;
     unsigned long pingtimer;
-    char          MessageCheckBuf[5];
+    unsigned long connectedtimer;
+    char          MessageCheckBuf[15];
     byte          MessageReceivingMode;
     unsigned int  MessageSize;
     unsigned int  MessageSize_return;
     byte          MessageCursor;
+    bool          bConnected;
+    bool          bIPD;
     
     bool bWebSocketConnect;
     
