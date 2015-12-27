@@ -45,7 +45,7 @@ public:
     bool smartLink();
     bool connected();
     uint32_t recv();
-    void Send(uint8_t mux_id,char *str, byte len) ;
+    void Send(uint8_t mux_id,String str, byte len) ;
     void Send(char *str, byte len);
     void WebSocketConnect(String token);
     byte cipmux;
