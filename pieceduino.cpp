@@ -294,7 +294,13 @@ bool pieceduino::createTCP(String addr, uint32_t port)
     m_puart->print("\",");
     m_puart->println(port);
     
-    if(FindEspRecv("OK\r\n")){
+    if(FindEspRecv("ERROR\r\n")){
+    #if DEBUG_MODE
+        Serial.println("[error: can't create TCP]");
+    #endif
+        
+        return false;
+    }else if(FindEspRecv("OK\r\n")){
         
     #if DEBUG_MODE
         Serial.println("[ok: TCP created]");
@@ -306,6 +312,42 @@ bool pieceduino::createTCP(String addr, uint32_t port)
     #if DEBUG_MODE
         Serial.println("[error: can't create TCP]");
     #endif
+        
+        return false;
+    }
+}
+
+bool pieceduino::createUDP(String addr, uint32_t port)
+{
+    String data;
+    
+    m_puart->print("AT+CIPSTART=\"UDP");
+    m_puart->print("\",\"");
+    m_puart->print(addr);
+    m_puart->print("\",");
+    m_puart->print(port);
+    m_puart->print("[,(");
+    m_puart->print(port);
+    m_puart->println("),(0)");
+    
+    if(FindEspRecv("ERROR\r\n")){
+#if DEBUG_MODE
+        Serial.println("[error: can't create UDP]");
+#endif
+        
+        return false;
+    }else if(FindEspRecv("OK\r\n")){
+        
+#if DEBUG_MODE
+        Serial.println("[ok: UDP created]");
+#endif
+        bConnected = true;
+        return true;
+    }else{
+        
+#if DEBUG_MODE
+        Serial.println("[error: can't create UDP]");
+#endif
         
         return false;
     }
@@ -604,6 +646,7 @@ int pieceduino::FindEspRecv(char *str,String &recv) {
     while (1) {
         if (Serial1.available()) {
             char a = Serial1.read();
+            //Serial.print(a);
             data_tmp += a;
             byte i;
             for (i = 0; i < len; i++) {
@@ -681,10 +724,10 @@ bool pieceduino::ProcessReceivedCharacter() {
         char b = m_puart->read();
         if(b != '3'){
             bConnected = 0;
-            Serial.println(bConnected);
+            //Serial.println(bConnected);
         }else{
             bConnected = 1;
-             Serial.println(bConnected);
+            //Serial.println(bConnected);
         }
         while (1) {
             char b = m_puart->read();
@@ -922,7 +965,7 @@ void pieceduino::Send(char *str, byte len) {
 }
 
 //
-void pieceduino::Send(uint8_t mux_id, char *str, byte len) {
+void pieceduino::Send(uint8_t mux_id, String str, byte len) {
     m_puart->print("AT+CIPSEND=");
     m_puart->print(mux_id);
     m_puart->print(",");
@@ -936,7 +979,9 @@ void pieceduino::Send(uint8_t mux_id, char *str, byte len) {
         errorCheck = 1;
         return;
     }
-
+    
+    Serial1.print(str);
+    /*
     int i;
     for (i = 0; i < len; i++) {
         
@@ -945,6 +990,7 @@ void pieceduino::Send(uint8_t mux_id, char *str, byte len) {
             delay(20);
         }
     }
+     */
     FindEspRecv("SEND OK\r\n");
 }
 
