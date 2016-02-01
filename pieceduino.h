@@ -20,7 +20,6 @@
 #define WS_SIZE16         126
 #define WS_SIZE64         127
 
-
 class pieceduino
 {
 public:
@@ -40,6 +39,7 @@ public:
     
     bool createTCPServer(uint32_t port = 3333);
     bool createTCP(String addr, uint32_t port);
+    bool createUDP(String addr, uint32_t port);
     bool enableMUX();
     bool disableMUX();
     bool smartLink();
