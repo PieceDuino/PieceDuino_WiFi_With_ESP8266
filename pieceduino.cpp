@@ -607,8 +607,8 @@ int pieceduino::FindEspRecv(char *str) {
     char buf[len];
     byte mode = 0;
     while (1) {
-        if (Serial1.available()) {
-            char a = Serial1.read();
+        if (m_puart->available()) {
+            char a = m_puart->read();
             //Serial.print(a);
             byte i;
             for (i = 0; i < len; i++) {
@@ -644,8 +644,8 @@ int pieceduino::FindEspRecv(char *str,String &recv) {
     byte mode = 0;
     String data_tmp;
     while (1) {
-        if (Serial1.available()) {
-            char a = Serial1.read();
+        if (m_puart->available()) {
+            char a = m_puart->read();
             //Serial.print(a);
             data_tmp += a;
             byte i;
@@ -980,7 +980,7 @@ void pieceduino::Send(uint8_t mux_id, String str, byte len) {
         return;
     }
     
-    Serial1.print(str);
+    m_puart->print(str);
     /*
     int i;
     for (i = 0; i < len; i++) {
