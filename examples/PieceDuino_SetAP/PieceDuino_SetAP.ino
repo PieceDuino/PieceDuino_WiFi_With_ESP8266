@@ -1,6 +1,6 @@
 #include "pieceduino.h"
 pieceduino wifi(Serial1);
-
+uint32_t len;
 void setup() {
   Serial.begin(9600);
   Serial1.begin(115200);

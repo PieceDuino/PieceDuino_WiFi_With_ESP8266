@@ -2,9 +2,6 @@
 #include "pieceduino.h"
 
 #define DEBUG_MODE 1
-#define WEBSOCKET_SERVER         "www.pieceduino.com"
-#define WEBSOCKET_PORT           "8001"
-#define WEBSOCKET_PATH           "/socket.io/?transport=websocket"
 #define SOCKETIO_HEARTBEAT     55000
 #define CONNECTED_TIMER     10000
 #define ESP8266_TIMEOUT   10000
@@ -22,6 +19,10 @@ pieceduino::pieceduino(HardwareSerial &uart, uint32_t baud): m_puart(&uart)
     MessageCursor        = 0;  //
     bWebSocketConnect    = false; //檢測是否現在為使用websocket
     bConnected = false;
+    
+    WEBSOCKET_SERVER    =     "www.pieceduino.com";
+    WEBSOCKET_PORT      =     "8001";
+    WEBSOCKET_PATH      =     "/socket.io/?transport=websocket";
 }
 
 //
@@ -34,7 +35,7 @@ uint32_t pieceduino::recv(){
     if(bWebSocketConnect == true){
         if (millis() > pingtimer + SOCKETIO_HEARTBEAT) {
             #if DEBUG_MODE
-            Serial.print("handshaking...");
+            Serial.print(F("handshaking..."));
             #endif
             MessageReceivingMode = 0;
             MessageSize = 0;
@@ -45,7 +46,7 @@ uint32_t pieceduino::recv(){
     
         if (errorCheck == 1) {
             #if DEBUG_MODE
-            Serial.println("errorCheck == 1");
+            Serial.println(F("errorCheck == 1"));
             #endif
             WebSocketConnect(pieceduino_cloud_token);  //recconect
             pingtimer = millis();
@@ -136,17 +137,17 @@ String pieceduino::sensingAP(String ssid){
 bool pieceduino::begin(){
     String Version;
     #if DEBUG_MODE
-    Serial.print("testing ESP8266...");
+    Serial.print(F("testing ESP8266..."));
     #endif
     m_puart->println(F("AT"));
     if(FindEspRecv("OK\r\n")){
     #if DEBUG_MODE
-        Serial.println("[ok]");
+        Serial.println(F("[ok]"));
     #endif
         return true;
     }else{
     #if DEBUG_MODE
-        Serial.println("[fatal error: check baud rate]");
+        Serial.println(F("[fatal error: check baud rate]"));
     #endif
         errorCheck = 1;
         return false;
@@ -156,7 +157,7 @@ bool pieceduino::begin(){
 //
 bool pieceduino::reset(){
     #if DEBUG_MODE
-    Serial.print("reset ESP8266...");
+    Serial.print(F("reset ESP8266..."));
     #endif
     m_puart->println(F("\r\nAT+RST"));
     if(FindEspRecv("ready\r\n")){
@@ -166,7 +167,7 @@ bool pieceduino::reset(){
         return true;
     }else{
     #if DEBUG_MODE
-        Serial.println("[error: can't reset ESP8266, check baud rate, reset arduino]");
+        Serial.println(F("[error: can't reset ESP8266, check baud rate, reset arduino]"));
     #endif
         errorCheck = 1;
         return false;
@@ -176,7 +177,7 @@ bool pieceduino::reset(){
 //
 bool pieceduino::setWifiMode(int pattern){
     #if DEBUG_MODE
-    Serial.print("setting ESP8266 mode...");
+    Serial.print(F("setting ESP8266 mode..."));
     #endif
     
     switch(pattern){
@@ -196,13 +197,13 @@ bool pieceduino::setWifiMode(int pattern){
     #if DEBUG_MODE
         switch(pattern){
         case 1:
-            Serial.println("[ok: station mode]");
+            Serial.println(F("[ok: station mode]"));
             break;
         case 2:
-            Serial.println("[ok: ap mode]");
+            Serial.println(F("[ok: ap mode]"));
             break;
         case 3:
-            Serial.println("[ok: both mode]");
+            Serial.println(F("[ok: both mode]"));
             break;
         }
     #endif
@@ -211,7 +212,7 @@ bool pieceduino::setWifiMode(int pattern){
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: not station mode]");
+        Serial.println(F("[error: not station mode]"));
     #endif
         
         return false;
@@ -221,7 +222,7 @@ bool pieceduino::setWifiMode(int pattern){
 //
 bool pieceduino::connToWifi(String ssid, String pwd){
     #if DEBUG_MODE
-    Serial.print("connecting to WiFi...");
+    Serial.print(F("connecting to WiFi..."));
     #endif
     
     m_puart->print(F("AT+CWJAP=\""));
@@ -240,7 +241,7 @@ bool pieceduino::connToWifi(String ssid, String pwd){
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: can't connect WiFi]");
+        Serial.println(F("[error: can't connect WiFi]"));
     #endif
         
         errorCheck = 1;
@@ -260,7 +261,7 @@ bool pieceduino::connected(){
 //
 bool pieceduino::createTCPServer(uint32_t port){
     #if DEBUG_MODE
-    Serial.print("create TCP Server...");
+    Serial.print(F("create TCP Server..."));
     #endif
     
     m_puart->print("AT+CIPSERVER=1,");
@@ -269,14 +270,14 @@ bool pieceduino::createTCPServer(uint32_t port){
     if(FindEspRecv("OK\r\n")){
         
     #if DEBUG_MODE
-        Serial.println("[ok: TCP Server created]");
+        Serial.println(F("[ok: TCP Server created]"));
     #endif
         
         return true;
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: can't create TCP Server]");
+        Serial.println(F("[error: can't create TCP Server]"));
     #endif
         
         return false;
@@ -296,21 +297,21 @@ bool pieceduino::createTCP(String addr, uint32_t port)
     
     if(FindEspRecv("ERROR\r\n")){
     #if DEBUG_MODE
-        Serial.println("[error: can't create TCP]");
+        Serial.println(F("[error: can't create TCP]"));
     #endif
         
         return false;
     }else if(FindEspRecv("OK\r\n")){
         
     #if DEBUG_MODE
-        Serial.println("[ok: TCP created]");
+        Serial.println(F("[ok: TCP created]"));
     #endif
         bConnected = true;
         return true;
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: can't create TCP]");
+        Serial.println(F("[error: can't create TCP]"));
     #endif
         
         return false;
@@ -332,21 +333,21 @@ bool pieceduino::createUDP(String addr, uint32_t port)
     
     if(FindEspRecv("ERROR\r\n")){
 #if DEBUG_MODE
-        Serial.println("[error: can't create UDP]");
+        Serial.println(F("[error: can't create UDP]"));
 #endif
         
         return false;
     }else if(FindEspRecv("OK\r\n")){
         
 #if DEBUG_MODE
-        Serial.println("[ok: UDP created]");
+        Serial.println(F("[ok: UDP created]"));
 #endif
         bConnected = true;
         return true;
     }else{
         
 #if DEBUG_MODE
-        Serial.println("[error: can't create UDP]");
+        Serial.println(F("[error: can't create UDP]"));
 #endif
         
         return false;
@@ -360,14 +361,14 @@ bool pieceduino::smartLink(){
     if(FindEspRecv("OK\r\n")){
         
     #if DEBUG_MODE
-        Serial.println("[ok: smartLink]");
+        Serial.println(F("[ok: smartLink]"));
     #endif
         
         return true;
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: can't smartLink]");
+        Serial.println(F("[error: can't smartLink]"));
     #endif
         
         return false;
@@ -377,7 +378,7 @@ bool pieceduino::smartLink(){
 //
 bool pieceduino::disableMUX(){
 #if DEBUG_MODE
-    Serial.print("disable MUX...");
+    Serial.print(F("disable MUX..."));
 #endif
     
     m_puart->print("AT+CIPMUX=");
@@ -386,7 +387,7 @@ bool pieceduino::disableMUX(){
     if(FindEspRecv("OK\r\n")){
         
 #if DEBUG_MODE
-        Serial.println("[ok: single]");
+        Serial.println(F("[ok: single]"));
 #endif
         
         cipmux = 0;
@@ -394,7 +395,7 @@ bool pieceduino::disableMUX(){
     }else{
         
 #if DEBUG_MODE
-        Serial.println("[error: can't single]");
+        Serial.println(F("[error: can't single]"));
 #endif
         
         return false;
@@ -404,7 +405,7 @@ bool pieceduino::disableMUX(){
 //
 bool pieceduino::enableMUX(){
     #if DEBUG_MODE
-    Serial.print("enable MUX...");
+    Serial.print(F("enable MUX..."));
     #endif
     
     m_puart->print("AT+CIPMUX=");
@@ -413,7 +414,7 @@ bool pieceduino::enableMUX(){
     if(FindEspRecv("OK\r\n")){
         
     #if DEBUG_MODE
-        Serial.println("[ok: multiple]");
+        Serial.println(F("[ok: multiple]"));
     #endif
         
         cipmux = 1;
@@ -421,7 +422,7 @@ bool pieceduino::enableMUX(){
     }else{
         
     #if DEBUG_MODE
-        Serial.println("[error: can't multiple]");
+        Serial.println(F("[error: can't multiple]"));
     #endif
         
         return false;
@@ -449,7 +450,7 @@ bool pieceduino::setSleep(uint8_t mode){
     
     if(FindEspRecv("OK")){
 #if DEBUG_MODE
-        Serial.print("[ok: Sleep Setting]");
+        Serial.print(F("[ok: Sleep Setting]"));
 #endif
         return true;
     }else{
@@ -471,7 +472,7 @@ bool pieceduino::setDeepSleep(uint8_t time){
     
     if(FindEspRecv("OK")){
 #if DEBUG_MODE
-        Serial.print("[ok: DeepSleep Setting]");
+        Serial.print(F("[ok: DeepSleep Setting]"));
 #endif
         return true;
     }else{
@@ -485,7 +486,7 @@ bool pieceduino::setAP(String ssid, String pwd , uint8_t channel, uint8_t ecn){
     String cmd;
     
 #if DEBUG_MODE
-    Serial.print("Setting AP Mode Detail...");
+    Serial.print(F("Setting AP Mode Detail..."));
 #endif
     m_puart->print(F("AT+CWSAP_DEF=\""));
     m_puart->print(ssid);
@@ -498,7 +499,7 @@ bool pieceduino::setAP(String ssid, String pwd , uint8_t channel, uint8_t ecn){
     
     if(FindEspRecv("OK")){
 #if DEBUG_MODE
-        Serial.println("[ok: AP Setting]");
+        Serial.println(F("[ok: AP Setting]"));
 #endif
         return true;
     }else{
@@ -513,7 +514,7 @@ void pieceduino::WebSocketConnect(String token){
     pieceduino_cloud_token = token;
     
     #if DEBUG_MODE
-    Serial.print("opening TCP connection...");
+    Serial.print(F("opening TCP connection..."));
     #endif
     
     m_puart->print(F("AT+CIPSTART=\"TCP\",\""));
@@ -527,7 +528,7 @@ void pieceduino::WebSocketConnect(String token){
     #endif
     }else{
     #if DEBUG_MODE
-        Serial.println("[error: can't open TCP connection]");
+        Serial.println(F("[error: can't open TCP connection]"));
     #endif
         errorCheck = 1;
         return;
@@ -535,15 +536,19 @@ void pieceduino::WebSocketConnect(String token){
     
     char key_base64[] = "B3aOqgUw9RtO7WoAAxIupQ==";
     #if DEBUG_MODE
-    Serial.print("opening Websocket connection...");
+    Serial.print(F("opening Websocket connection..."));
     #endif
     m_puart->print(F("AT+CIPSEND="));
+    /*
     m_puart->println(StringLength(WEBSOCKET_PATH)+pieceduino_cloud_token.length()+StringLength(WEBSOCKET_SERVER) + StringLength(WEBSOCKET_PORT) + 139+28);
+     */
+    
+    m_puart->println(WEBSOCKET_PATH.length()+pieceduino_cloud_token.length()+WEBSOCKET_SERVER.length() + WEBSOCKET_PORT.length() + 139+28);
     
     if(FindEspRecv("> ")){
     }else{
     #if DEBUG_MODE
-        Serial.println("[error: can't send tcp]");
+        Serial.println(F("[error: can't send tcp]"));
     #endif
         errorCheck = 1;
         return;
@@ -574,6 +579,7 @@ void pieceduino::WebSocketConnect(String token){
         
         if(m_puart->available()){
             char c = (char)m_puart->read();
+            //Serial.print(c);
             if(c != '\r' && c != '\n' && c != '\0'){
             s += c;
             }
@@ -585,15 +591,17 @@ void pieceduino::WebSocketConnect(String token){
     }
     
     //Serial.println(s);
+    //Serial.println(s.length());
+    //Serial.println(s.indexOf("connected"));
     
-    if(s.indexOf("t_Access")>0){  //s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+    if(s.indexOf("connected")>0){  //s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
     #if DEBUG_MODE
         Serial.println("[ok]");
     #endif
         bWebSocketConnect = true;
     }else{
     #if DEBUG_MODE
-        Serial.println("[error: can't open Websocket. check token.]");
+        Serial.println(F("[error: can't open Websocket. check token.]"));
     #endif
         //error but ignore
     }  
@@ -601,9 +609,10 @@ void pieceduino::WebSocketConnect(String token){
 }
 
 //
-int pieceduino::FindEspRecv(char *str) {
+int pieceduino::FindEspRecv(String str) {
     unsigned long timeofstart = millis();
-    byte len = StringLength(str);
+    //byte len = StringLength(str);
+    byte len = str.length();
     char buf[len];
     byte mode = 0;
     while (1) {
@@ -637,9 +646,10 @@ int pieceduino::FindEspRecv(char *str) {
 }
 
 //
-int pieceduino::FindEspRecv(char *str,String &recv) {
+int pieceduino::FindEspRecv(String str,String &recv) {
     unsigned long timeofstart = millis();
-    byte len = StringLength(str);
+    //byte len = StringLength(str);
+    byte len = str.length();
     char buf[len];
     byte mode = 0;
     String data_tmp;
@@ -677,6 +687,7 @@ int pieceduino::FindEspRecv(char *str,String &recv) {
 }
 
 //
+/*
 byte pieceduino::StringLength(char *str) {
     byte len = 0;
     while (1) {
@@ -688,7 +699,8 @@ byte pieceduino::StringLength(char *str) {
     }
     return len;
 }
-
+*/
+ 
 // Receive messeage
 bool pieceduino::ProcessReceivedCharacter() {
     char a = m_puart->read();
@@ -832,7 +844,7 @@ void  pieceduino::parseWebsocket(String frame){
 void pieceduino::parseSocketIo(String frame){
     if(frame.charAt(0)=='3'){
 #if DEBUG_MODE
-        Serial.println("[ok]");
+        Serial.println(F("[ok]"));
 #endif
     }else if((frame.charAt(0)=='4')&&(frame.charAt(1)=='2')){
         frame.remove(0,2);
@@ -912,13 +924,13 @@ void pieceduino::WebSocketSendText(String str) {
 }
 
 //
-bool pieceduino::Throw(char key, float value)
+bool pieceduino::Throw(String key, float value)
 {
     if(false){
         
-        Serial.print("Throw key: ");
+        Serial.print(F("Throw key: "));
         Serial.print(key);
-        Serial.print(" value: ");
+        Serial.print(F(" value: "));
         Serial.println(value);
     }
     String frame;
@@ -941,13 +953,13 @@ bool pieceduino::Throw(char key, float value)
 }
 
 //
-void pieceduino::Send(char *str, byte len) {
+void pieceduino::Send(String str, byte len) {
     m_puart->print(F("AT+CIPSEND="));
     m_puart->println(len);
     if(FindEspRecv("> ")){//wait for prompt
     }else{
 #if DEBUG_MODE
-        Serial.println("error: can't send tcp");
+        Serial.println(F("error: can't send tcp"));
 #endif
         errorCheck = 1;
         return;
@@ -974,7 +986,7 @@ void pieceduino::Send(uint8_t mux_id, String str, byte len) {
     if(FindEspRecv("> ")){//wait for prompt
     }else{
 #if DEBUG_MODE
-        Serial.println("error: can't send tcp");
+        Serial.println(F("error: can't send tcp"));
 #endif
         errorCheck = 1;
         return;

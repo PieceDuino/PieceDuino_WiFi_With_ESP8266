@@ -35,7 +35,7 @@ public:
     String getIP();
     String sensingAP(String ssid);
     bool ProcessReceivedCharacter();
-    bool Throw(char key, float value);
+    bool Throw(String key, float value);
     
     bool createTCPServer(uint32_t port = 3333);
     bool createTCP(String addr, uint32_t port);
@@ -46,7 +46,7 @@ public:
     bool connected();
     uint32_t recv();
     void Send(uint8_t mux_id,String str, byte len) ;
-    void Send(char *str, byte len);
+    void Send(String str, byte len);
     void WebSocketConnect(String token);
     byte cipmux;
     char          MessageBuffer[MAX_MESSAGE_SIZE + 1];
@@ -55,11 +55,17 @@ public:
     void setCallback(void (*WebSocketInCallback)(char key, float value));
     void SaveDataToCloud(String key, String data);
     
+    String WEBSOCKET_SERVER;
+    String WEBSOCKET_PORT;
+    String WEBSOCKET_PATH;
+    
   private:
     
-    byte StringLength(char *str);
-    int FindEspRecv(char *str);
-    int FindEspRecv(char *str,String &recv);
+    //byte StringLength(char *str);
+    //int FindEspRecv(char *str);
+    int FindEspRecv(String str);
+    //int FindEspRecv(char *str,String &recv);
+    int FindEspRecv(String str,String &recv);
     bool StringFilter(String begin, String end, String &data);
     
     void ProcessMessage(char *str, byte len);

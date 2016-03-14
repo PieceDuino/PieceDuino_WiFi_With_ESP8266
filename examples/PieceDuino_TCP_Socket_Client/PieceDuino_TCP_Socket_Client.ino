@@ -1,6 +1,6 @@
 #include "pieceduino.h"
-#define SSID        "PieceDuino-AP"
-#define PASSWORD    ""
+#define SSID        "Tronk-Interactive"
+#define PASSWORD    "tronk54304753"
 pieceduino wifi(Serial1);
 uint32_t len;
 
@@ -18,7 +18,7 @@ void setup(){
   }
   Serial.print(wifi.getIP());//取得IP
   wifi.disableMUX();//開啟多人連線模式
-   wifi.createTCP("192.168.4.1",8090);//開啟TCP Server
+   wifi.createUDP("192.168.0.101",7400);//開啟TCP Server
   delay(100);
   wifi.Send("Hello This Client" , 17);//送出訊息到Server端
 }
@@ -41,7 +41,7 @@ void loop(){
       recvData[i] = wifi.MessageBuffer[i];
     }
     Serial.println("");
-    delay(100);
+    //delay(100);
     wifi.Send("Hello This Client" , 17);//送出訊息到Server端
   }else{
     //wifi.Send("Hello This Client" , 17);//送出訊息到Server端
@@ -49,7 +49,7 @@ void loop(){
   //------------------------------------------
   if(!wifi.connected()){
     Serial.println("disconnected");
-    if(wifi.createTCP("192.168.4.1",8090)){//開啟TCP Server
+    if(wifi.createUDP("192.168.0.101",7400)){//開啟TCP Server
       wifi.Send("Hello This Client" , 17);
     }
   }

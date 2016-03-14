@@ -33,7 +33,7 @@ void loop(){
   wifi.recv();
 
   if (millis() - timer > 3000){
-      wifi.Throw('Humidity',millis()/1000.0);
+      wifi.Throw("A",millis()/1000.0);
       //wifi.SaveDataToCloud("C","20.3");
       timer = millis();
   }
